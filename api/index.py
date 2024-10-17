@@ -100,7 +100,7 @@ html = '''<!DOCTYPE html>
           </code></pre>
           <p>3.Post使用方法</p>
           <pre><code>curl -X POST -H "Content-Type: application/json" -d '{"latitude": 29.00319, "longitude": 109.87862, "date": "2024-10-17", "timezone": "Asia/Shanghai"}' http://本网址/sun
-          </code></pre>
+          </code></pre>当地经纬度获取网址，<a href="http://www.maps4gis.com/xiangzhen/jingweidu/index.html">点这里</a>
         </div>
     </div>
     <div class="footer">
