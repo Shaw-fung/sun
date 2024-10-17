@@ -88,13 +88,13 @@ html = '''<!DOCTYPE html>
         <div class="content">
           <h3>基础说明</h3>
           <p>1.参数说明</p>
-          <pre><code>1)维度 latitude=29.00319
+          <pre><code>1)纬度 latitude=29.00319
           
-                     2)经度 longitude=109.87862
+2)经度 longitude=109.87862
                      
-                     3)需要查询的日期 date=2024-10-17
+3)需要查询的日期 date=2024-10-17
                      
-                     4)时区 timezone=Asia/Shanghai
+4)时区 timezone=Asia/Shanghai
 </code></pre><p>2.GET使用方法</p>
           <pre><code>https://本网址/sun?latitude=29.00319&longitude=109.87862&date=2024-10-17&timezone=Asia/Shanghai
           </code></pre>
