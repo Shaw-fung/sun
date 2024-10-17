@@ -33,6 +33,10 @@ def calculate_sun_info(latitude, longitude, date_str, tz_name):
     json_data = json.dumps(result, ensure_ascii=False)
     return json_data
 
+@app.route('/')
+def index():
+    return("http://www.mydomain.com/sun?latitude=29.00319&longitude=109.87862&date=2024-10-17&timezone=Asia/Shanghai")
+
 @app.route('/sun', methods=['POST', 'GET'])
 def get_sun_info():
     if request.method == 'POST':
