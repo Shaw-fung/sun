@@ -96,10 +96,10 @@ html = '''<!DOCTYPE html>
                      
 4)时区 timezone=Asia/Shanghai
 </code></pre><p>2.GET使用方法</p>
-          <pre><code>https://本网址/sun?latitude=29.00319&longitude=109.87862&date=2024-10-17&timezone=Asia/Shanghai
+          <pre><code>https://sun.paoto.com/sun?latitude=29.00319&longitude=109.87862&date=2024-10-17&timezone=Asia/Shanghai
           </code></pre>
           <p>3.Post使用方法</p>
-          <pre><code>curl -X POST -H "Content-Type: application/json" -d '{"latitude": 29.00319, "longitude": 109.87862, "date": "2024-10-17", "timezone": "Asia/Shanghai"}' http://本网址/sun
+          <pre><code>curl -X POST -H "Content-Type: application/json" -d '{"latitude": 29.00319, "longitude": 109.87862, "date": "2024-10-17", "timezone": "Asia/Shanghai"}' https://sun.paoto.com/sun
           </code></pre>当地经纬度获取网址，<a href="http://www.maps4gis.com/xiangzhen/jingweidu/index.html">点这里</a>👈🏻。
         </div>
     </div>
@@ -127,7 +127,7 @@ def calculate_sun_info(latitude, longitude, date_str, tz_name):
 
         result[event] = localized_time.strftime('%Y-%m-%d %H:%M:%S')
         
-    result = {'天亮': result['dawn'], '日出': result['sunrise'], '中午': result['noon'],'日落':  result['sunset'],'天黑':result['dusk']}
+    result = {'天亮': result['dawn'], '日出': result['sunrise'], '正午': result['noon'],'日落':  result['sunset'],'天黑':result['dusk']}
     json_data = json.dumps(result, ensure_ascii=False)
     return json_data
 
