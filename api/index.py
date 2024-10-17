@@ -12,6 +12,104 @@ import json
 
 app = Flask(__name__)
 
+html = '''<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="https://www.paoto.com/favicon.ico">
+    <title>日出、日落查询使用说明</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        .content {
+            margin-bottom: 20px;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px 0;
+            background-color: #333;
+            color: #fff;
+        }
+        pre {
+            background-color: #272822;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        code {
+            font-family: 'Source Code Pro', monospace;
+        }
+        a {
+            font-weight: bold;
+            color: #ffffff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        @media (max-width: 600px) {
+            .container {
+                margin: 20px;
+                padding: 15px;
+            }
+            .header {
+                padding: 15px 0;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Source+Code+Pro:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="header">
+        <h1>日出、日落查询使用说明</h1>
+    </div>
+    <div class="container">
+        <div class="content">
+          <h3>基础说明</h3>
+          <p>1.参数说明</p>
+          <pre><code>1)维度 latitude=29.00319
+          
+                     2)经度 longitude=109.87862
+                     
+                     3)需要查询的日期 date=2024-10-17
+                     
+                     4)时区 timezone=Asia/Shanghai
+</code></pre><p>2.GET使用方法</p>
+          <pre><code>https://本网址/sun?latitude=29.00319&longitude=109.87862&date=2024-10-17&timezone=Asia/Shanghai
+          </code></pre>
+          <p>3.Post使用方法</p>
+          <pre><code>curl -X POST -H "Content-Type: application/json" -d '{"latitude": 29.00319, "longitude": 109.87862, "date": "2024-10-17", "timezone": "Asia/Shanghai"}' http://本网址/sun
+          </code></pre>
+        </div>
+    </div>
+    <div class="footer">
+        <p>©2024 <a href="https://paoto.com">paoto.com</a>. All rights reserved. Powered by <a href="https://vercel.com/">Vercel</a>.</p>
+    </div>
+</body>
+</html>
+'''
+
 def calculate_sun_info(latitude, longitude, date_str, tz_name):
     tz = pytz.timezone(tz_name)
     for_date = datetime.strptime(date_str, '%Y-%m-%d').date()
@@ -35,7 +133,7 @@ def calculate_sun_info(latitude, longitude, date_str, tz_name):
 
 @app.route('/')
 def index():
-    return("http://www.mydomain.com/sun?latitude=29.00319&longitude=109.87862&date=2024-10-17&timezone=Asia/Shanghai")
+    return html
 
 @app.route('/sun', methods=['POST', 'GET'])
 def get_sun_info():
