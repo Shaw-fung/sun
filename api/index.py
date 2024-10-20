@@ -125,9 +125,9 @@ def calculate_sun_info(latitude, longitude, date_str, tz_name):
         elif time > datetime.combine(for_date, datetime.max.time()).replace(tzinfo=tz):
             localized_time -= timedelta(days=1)
 
-        result[event] = localized_time.strftime('%Y-%m-%d %H:%M:%S')
-        
-    result = {'天亮': result['dawn'], '日出': result['sunrise'], '正午': result['noon'],'日落':  result['sunset'],'天黑':result['dusk']}
+        result[event] = localized_time.strftime('%H:%M')
+    date = for_date.strftime("%Y-%m-%d")
+    result = {'日期':date, '天亮': result['dawn'], '日出': result['sunrise'], '正午': result['noon'],'日落':  result['sunset'],'天黑':result['dusk']}
     json_data = json.dumps(result, ensure_ascii=False)
     return json_data
 
@@ -141,12 +141,20 @@ def get_sun_info():
         data = request.get_json()
         latitude = data['latitude']
         longitude = data['longitude']
-        date_str = data['date']
+        if data['date'] == 'today':
+            today = datetime.today()
+            date_str = today.strftime("%Y-%m-%d")
+        else:
+            date_str = data['date']
         tz_name = data['timezone']
     elif request.method == 'GET':
         latitude = float(request.args.get('latitude'))
         longitude = float(request.args.get('longitude'))
-        date_str = request.args.get('date')
+        if request.args.get('date') == 'today':
+            today = datetime.today()
+            date_str = today.strftime("%Y-%m-%d")
+        else:
+            date_str = request.args.get('date')
         tz_name = request.args.get('timezone')
 
     result = calculate_sun_info(latitude, longitude, date_str, tz_name)
