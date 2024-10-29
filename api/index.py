@@ -8,7 +8,7 @@ import json
 app = Flask(__name__)
 
 # 读取json数据
-with open('data.json', 'r', encoding='utf-8') as f:
+with open('/var/task/user/api/data.json', 'r', encoding='utf-8') as f:
     data = json.load(f)
 
 # 提取去重后的province
