@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>跑途网 - 经纬网，日出、日落查询</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            text-align: center;
+            color: #343a40;
+            margin-bottom: 20px;
+        }
+        h2 {
+            color: #007bff;
+            margin-top: 20px;
+        }
+        .location {
+            margin: 10px 0;
+            color: #666;
+        }
+        .link-button {
+            margin: 5px;
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .link-button:hover {
+            background-color: #0056b3;
+        }
+        #coordinates-list, #sun-list {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .coordinate-item {
+            margin: 5px 0;
+            font-weight: bold;
+        }
+        .sun-info {
+            background-color: #e9ecef;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            text-align: center;
+        }
+        .isnight-info {
+            background-color: #e9ecef;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            text-align: center;
+        }
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .sunset-times {
+            margin-top: 20px;
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 8px;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>在线经纬度查询工具</h1>
+        <div class="location">当前位置：查询工具 > 经纬度查询</div>
+        <div id="provinces">
+            <h2>省市级:</h2>
+            <div id="provinces-list" class="d-flex flex-wrap">
+                {% for province in provinces %}
+                    <a href="#" class="link-button province-link" data-province="{{ province }}">{{ province }}</a>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <div id="cities" style="display: none;">
+            <h2>城市:</h2>
+            <div id="cities-list" class="d-flex flex-wrap"></div>
+        </div>
+        
+        <div id="areas" style="display: none;">
+            <h2>区域:</h2>
+            <div id="areas-list" class="d-flex flex-wrap"></div>
+        </div>
+        
+        <div id="coordinates" style="display: none;">
+            <h2>定位坐标:</h2>
+            <div id="coordinates-list"></div>
+            <h2>日出、日落:</h2>
+            <div class="sunset-times">
+                <table id="sun-times-table">
+                    <tr>
+                        <th>日期</th>
+                        <th>天亮</th>
+                        <th>日出</th>
+                        <th>正午</th>
+                        <th>日落</th>
+                        <th>天黑</th>
+                    </tr>
+                    <tr id="sun-times-row">
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </table>
+            </div>
+            <div id="sun-list"></div>
+            <h2>是否夜晚:</h2>
+            <div id="isnight-list"></div>
+        </div>
+        <div class="btn-container">
+            <a href="javascript:history.back()" class="btn btn-secondary">返回上一页</a>
+            <a href="/" class="btn btn-secondary">返回首页</a>
+        </div>
+    </div>
+    <footer class="footer">
+	<p>Copyright © 2021-2024 <a href="https://www.paoto.com/">跑途网</a>. All Rights Reserved.</p>
+	<p><a href="https://beian.miit.gov.cn">ICP备0000号</a>
+	</p>
+	<p><div style="display:none;"></div>﻿</p>
+</footer>
+    <script>
+        $(document).ready(function(){
+            let currentLocation = ['经纬度查询'];
+
+            function updateLocation() {
+                $('.location').text('当前位置：查询工具 > ' + currentLocation.join(' > '));
+            }
+
+            $('.province-link').click(function(){
+                var province = $(this).data('province');
+                currentLocation[1] = province; // 更新城市位置
+                $('#cities-list').empty();
+                $('#areas-list').empty();
+                $('#coordinates-list').empty();
+                updateLocation(); // 更新位置显示
+
+                $.get('/location', {province: province}, function(data){
+                    data.forEach(function(city){
+                        $('#cities-list').append('<a href="#" class="link-button city-link" data-province="' + province + '" data-city="' + city + '">' + city + '</a>');
+                    });
+                    document.getElementById("provinces").style.display = "none";
+                    document.getElementById("cities").style.display = "block";
+                });
+            });
+
+            $(document).on('click', '.city-link', function(){
+                var province = $(this).data('province');
+                var city = $(this).data('city');
+                currentLocation[2] = city; // 更新省市位置
+                $('#areas-list').empty();
+                $('#coordinates-list').empty();
+                updateLocation(); // 更新位置显示
+
+                $.get('/location', {province: province, city: city}, function(data){
+                    data.forEach(function(area){
+                        $('#areas-list').append('<a href="#" class="link-button area-link" data-province="' + province + '" data-city="' + city + '" data-area="' + area + '">' + area + '</a>');
+                    });
+                    document.getElementById("cities").style.display = "none";
+                    document.getElementById("areas").style.display = "block";
+                });
+            });
+
+            $(document).on('click', '.area-link', function(){
+                var province = $(this).data('province');
+                var city = $(this).data('city');
+                var area = $(this).data('area');
+                currentLocation[3] = area; // 更新区域位置
+                $('#coordinates-list').empty();
+                $('#sun-times-row td').empty(); // 清空之前的日出日落时间
+                updateLocation(); // 更新位置显示
+
+                $.get('/location', {province: province, city: city, area: area}, function(data){
+                    data.forEach(function(coordinate){
+                        $('#coordinates-list').append('<div class="coordinate-item">' + coordinate.area + ': ' + coordinate.lat + ', ' + coordinate.lng + '</div>');
+                        $('#sun-list').append('<div class="sun-info"><a href="/sun?latitude=' + coordinate.lat + '&longitude=' + coordinate.lng + '&date=today&timezone=asia/shanghai">查看' + coordinate.area + '日出、日落时间</a></div>');
+                        $('#isnight-list').append('<div class="isnight-info"><a href="/isnight?latitude=' + coordinate.lat + '&longitude=' + coordinate.lng + '&date=today&timezone=asia/shanghai">查看' + coordinate.area + '现在是否夜晚</a></div>');
+
+                        // 请求日出日落时间
+                        $.get('/sun', {
+                            latitude: coordinate.lat,
+                            longitude: coordinate.lng,
+                            date: 'today',
+                            timezone: 'asia/shanghai'
+                        }, function(sunData) {
+                            // 填充表格
+                            $('#sun-times-row td:nth-child(1)').text(sunData.日期);
+                            $('#sun-times-row td:nth-child(2)').text(sunData.天亮);
+                            $('#sun-times-row td:nth-child(3)').text(sunData.日出);
+                            $('#sun-times-row td:nth-child(4)').text(sunData.正午);
+                            $('#sun-times-row td:nth-child(5)').text(sunData.日落);
+                            $('#sun-times-row td:nth-child(6)').text(sunData.天黑);
+                        });
+                    });
+                    document.getElementById("areas").style.display = "none";
+                    document.getElementById("coordinates").style.display = "block";
+                });
+            });
+        });
+    </script>
+</body>
+</html>
