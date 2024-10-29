@@ -4,11 +4,20 @@ import pytz
 import astral
 import astral.sun
 import json
+import os
 
 app = Flask(__name__)
 
+# 获取当前文件的目录
+current_dir = os.path.dirname(os.path.abspath(__file__))
+file_path = os.path.join(current_dir, 'data.json')
+
+# 检查文件是否存在
+if not os.path.exists(file_path):
+    raise FileNotFoundError(f"The file {file_path} does not exist.")
+
 # 读取json数据
-with open('/var/task/user/api/data.json', 'r', encoding='utf-8') as f:
+with open(file_path, 'r', encoding='utf-8') as f:
     data = json.load(f)
 
 # 提取去重后的province
