@@ -170,6 +170,26 @@ translations = {
         "homeButton": "Inicio",
         "footerText": "Copyright © 2021-2024 Paotu Net. Todos los derechos reservados."
     },
+    "ar": {
+        "title": "شبكة باوتو - أداة استعلام خط العرض والطول، شروق وغروب الشمس",
+        "header": "أداة استعلام خط العرض والطول على الإنترنت",
+        "currentLocation": "الموقع الحالي: أداة الاستعلام > استعلام خط العرض والطول",
+        "provinceHeader": "المقاطعات:",
+        "cityHeader": "المدن:",
+        "areaHeader": "المناطق:",
+        "coordinatesHeader": "إحداثيات الموقع:",
+        "sunHeader": "شروق وغروب الشمس:",
+        "isnightHeader": "هل هو ليل:",
+        "Date": "تاريخ",
+        "Dawn": "فجر",
+        "Sunrise": "شروق الشمس",
+        "Noon": "ظهر",
+        "Sunset": "غروب الشمس",
+        "Dusk": "غسق",
+        "backButton": "العودة إلى الصفحة السابقة",
+        "homeButton": "العودة إلى الصفحة الرئيسية",
+        "footerText": "حقوق الطبع والنشر © 2021-2024 شبكة باوتو. جميع الحقوق محفوظة."
+    }
     # 可以添加其他语言的翻译内容...
 }
 
