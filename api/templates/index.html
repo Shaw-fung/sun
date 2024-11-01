@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="{{ language }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="page-title">跑途网 - 经纬网，日出、日落查询</title>
+    <title id="page-title">{{ translations[language].title }}</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}"  />
@@ -100,20 +100,20 @@
 </head>
 <body>
     <div class="container">
-        <h1 id="header-title">在线经纬度查询工具</h1>
+        <h1 id="header-title">{{ translations[language].header }}</h1>
         <select id="language-select" class="language-select">
-            <option value="zh-CN">简体中文</option>
-            <option value="zh-TW">繁体中文</option>
-            <option value="en">English</option>
-            <option value="ja">日本語</option>
-            <option value="de">Deutsch</option>
-            <option value="ru">Русский</option>
-            <option value="fr">Français</option>
-            <option value="es">Español</option>
+            <option value="en" {% if language == 'en' %}selected{% endif %}>English</option>
+            <option value="zh-CN" {% if language == 'zh-CN' %}selected{% endif %}>简体中文</option>
+            <option value="zh-TW" {% if language == 'zh-TW' %}selected{% endif %}>繁体中文</option>
+            <option value="ja" {% if language == 'ja' %}selected{% endif %}>日本語</option>
+            <option value="de" {% if language == 'de' %}selected{% endif %}>Deutsch</option>
+            <option value="ru" {% if language == 'ru' %}selected{% endif %}>Русский</option>
+            <option value="fr" {% if language == 'fr' %}selected{% endif %}>Français</option>
+            <option value="es" {% if language == 'es' %}selected{% endif %}>Español</option>
         </select>
-        <div class="location" id="current-location">当前位置：查询工具 > 经纬度查询</div>
+        <div class="location" id="current-location">{{ translations[language].currentLocation }}</div>
         <div id="provinces">
-            <h2 id="province-header">省市级:</h2>
+            <h2 id="province-header">{{ translations[language].provinceHeader }}</h2>
             <div id="provinces-list" class="d-flex flex-wrap">
                 {% for province in provinces %}
                     <a href="#" class="link-button province-link" data-province="{{ province }}">{{ province }}</a>
@@ -122,28 +122,28 @@
         </div>
         
         <div id="cities" style="display: none;">
-            <h2 id="city-header">城市:</h2>
+            <h2 id="city-header">{{ translations[language].cityHeader }}</h2>
             <div id="cities-list" class="d-flex flex-wrap"></div>
         </div>
         
         <div id="areas" style="display: none;">
-            <h2 id="area-header">区域:</h2>
+            <h2 id="area-header">{{ translations[language].areaHeader }}</h2>
             <div id="areas-list" class="d-flex flex-wrap"></div>
         </div>
         
         <div id="coordinates" style="display: none;">
-            <h2 id="coordinates-header">定位坐标:</h2>
+            <h2 id="coordinates-header">{{ translations[language].coordinatesHeader }}</h2>
             <div id="coordinates-list"></div>
-            <h2 id="sun-header">日出、日落:</h2>
+            <h2 id="sun-header">{{ translations[language].sunHeader }}</h2>
             <div class="sunset-times">
                 <table id="sun-times-table">
                     <tr>
-                        <th>日期</th>
-                        <th>天亮</th>
-                        <th>日出</th>
-                        <th>正午</th>
-                        <th>日落</th>
-                        <th>天黑</th>
+                        <th>{{ translations[language].Date }}</th>
+                        <th>{{ translations[language].Dawn }}</th>
+                        <th>{{ translations[language].Sunrise }}</th>
+                        <th>{{ translations[language].Noon }}</th>
+                        <th>{{ translations[language].Sunset }}</th>
+                        <th>{{ translations[language].Dusk }}</th>
                     </tr>
                     <tr id="sun-times-row">
                         <td></td>
@@ -156,19 +156,27 @@
                 </table>
             </div>
             <div id="sun-list"></div>
-            <h2 id="isnight-header">是否夜晚:</h2>
+            <h2 id="isnight-header">{{ translations[language].isnightHeader }}</h2>
             <div id="isnight-list"></div>
         </div>
         <div class="btn-container">
-            <a href="javascript:history.back()" class="btn btn-secondary" id="back-button">返回上一页</a>
-            <a href="/" class="btn btn-secondary" id="home-button">返回首页</a>
+            <a href="javascript:history.back()" class="btn btn-secondary" id="back-button">{{ translations[language].backButton }}</a>
+            <a href="/" class="btn btn-secondary" id="home-button">{{ translations[language].homeButton }}</a>
         </div>
     </div>
     <footer class="footer">
-        <p id="footer-text">Copyright © 2021-2024 <a href="https://www.paoto.com/">跑途网</a>. All Rights Reserved.</p>
+        <p id="footer-text">{{ translations[language].footerText }}</p>
         <p><a href="https://beian.miit.gov.cn">ICP备0000号</a></p>
         <p><div style="display:none;"></div>﻿</p>
     </footer>
+        <script>
+        $(document).ready(function() {
+            $('#language-select').change(function() {
+                const selectedLang = this.value;
+                window.location.href = '?lang=' + selectedLang; // 重新加载页面并传递所选语言
+            });
+        });
+    </script>
 <script src={{ url_for('static', filename='sun.js') }}></script>
 </body>
 </html>
