@@ -229,7 +229,13 @@ def calculate_sun_info(latitude, longitude, date_str, tz_name):
 
         result[event] = localized_time.strftime('%H:%M')
     date = for_date.strftime("%Y-%m-%d")
-    result = {'日期':date, '天亮': result['dawn'], '日出': result['sunrise'], '正午': result['noon'],'日落':  result['sunset'],'天黑':result['dusk']}
+    sunrise = datetime.strptime(result["sunrise"], "%H:%M")
+    sunset = datetime.strptime(result["sunset"], "%H:%M")
+    # 计算昼长
+    day_length = sunset - sunrise
+    day_length_hours = day_length.seconds // 3600
+    day_length_minutes = (day_length.seconds % 3600) // 60
+    result = {'日期':date, '天亮': result['dawn'], '日出': result['sunrise'], '正午': result['noon'],'日落':  result['sunset'],'天黑':result['dusk'],'昼长': f"{day_length_hours}小时{day_length_minutes}分钟"}
     json_data = json.dumps(result, ensure_ascii=False)
     return json_data
 
