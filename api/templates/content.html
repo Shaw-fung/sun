@@ -1,0 +1,92 @@
+{# content.html —— 当前层级的主体内容（面包屑 + 列表/坐标表）#}
+{# 被 index.html 全量内嵌，也被 ?partial=1 单独返回给前端做 AJAX 局部刷新 #}
+
+<nav aria-label="breadcrumb" class="breadcrumb-nav">
+    {% for crumb in breadcrumb %}
+        {% if crumb[1] %}
+            <a href="{{ crumb[1] }}" class="drill-link breadcrumb-link">{{ crumb[0] }}</a>
+        {% else %}
+            <span class="breadcrumb-current">{{ crumb[0] }}</span>
+        {% endif %}
+        {% if not loop.last %}<span class="sep"> &rsaquo; </span>{% endif %}
+    {% endfor %}
+</nav>
+
+{% if level == 'provinces' %}
+    <h2>{{ t.provinceHeader }}</h2>
+    <div class="list flex-wrap">
+        {% for item in links %}
+            <a href="{{ item[1] }}" class="link-button drill-link">{{ item[0] }}</a>
+        {% endfor %}
+    </div>
+{% elif level == 'cities' %}
+    <h2>{{ t.cityHeader }}</h2>
+    <div class="list flex-wrap">
+        {% for item in links %}
+            <a href="{{ item[1] }}" class="link-button drill-link">{{ item[0] }}</a>
+        {% endfor %}
+    </div>
+{% elif level == 'areas' %}
+    <h2>{{ t.areaHeader }}</h2>
+    <div class="list flex-wrap">
+        {% for item in links %}
+            <a href="{{ item[1] }}" class="link-button drill-link">{{ item[0] }}</a>
+        {% endfor %}
+    </div>
+{% elif level == 'towns' %}
+    <h2>{{ t.townHeader }}</h2>
+    <div class="list flex-wrap">
+        {% for item in links %}
+            <a href="{{ item[1] }}" class="link-button drill-link">{{ item[0] }}</a>
+        {% endfor %}
+    </div>
+{% elif level == 'coordinates' %}
+    <h2>{{ t.coordinatesHeader }}</h2>
+    {% if lat is not none %}
+        <div class="coordinate-item">{{ town }}：{{ lat }}, {{ lng }}</div>
+
+        <h2>{{ t.sunHeader }}</h2>
+        <div class="sunset-times">
+            <table id="sun-times-table">
+                <thead>
+                    <tr>
+                        <th>{{ t.Date }}</th>
+                        <th>{{ t.Dawn }}</th>
+                        <th>{{ t.Sunrise }}</th>
+                        <th>{{ t.Noon }}</th>
+                        <th>{{ t.Sunset }}</th>
+                        <th>{{ t.Dusk }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in sun_rows %}
+                        <tr>
+                            <td>{{ row['日期'] }}</td>
+                            <td>{{ row['天亮'] }}</td>
+                            <td>{{ row['日出'] }}</td>
+                            <td>{{ row['正午'] }}</td>
+                            <td>{{ row['日落'] }}</td>
+                            <td>{{ row['天黑'] }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <p class="muted">（{{ t.Date }}：未来 {{ days }} 天）</p>
+        </div>
+        <p class="muted">接口调用（供程序获取 JSON）：<a rel="nofollow" href="/sun?latitude={{ lat }}&longitude={{ lng }}&date=today&days={{ days }}&timezone=asia/shanghai">/sun?latitude={{ lat }}&amp;longitude={{ lng }}&amp;days={{ days }}&amp;timezone=asia/shanghai</a></p>
+
+        <h2>{{ t.isnightHeader }}</h2>
+        <div class="isnight-info">
+            {% if isnight == 'True' %}{{ t.isNightYes }}{% else %}{{ t.isNightNo }}{% endif %}
+            <span class="muted">（isNight: {{ isnight }}）</span>
+        </div>
+        <p class="muted">接口调用（供程序判断当前是否夜晚）：<a rel="nofollow" href="/isnight?latitude={{ lat }}&longitude={{ lng }}&date=today&timezone=asia/shanghai">/isnight?latitude={{ lat }}&amp;longitude={{ lng }}&amp;timezone=asia/shanghai</a></p>
+    {% else %}
+        <div class="coordinate-item muted">未找到“{{ town }}”对应的经纬度数据，请返回上一级重新选择。</div>
+    {% endif %}
+{% endif %}
+
+<div class="btn-container">
+    <a href="{{ parent_href if parent_href else home_href }}" class="btn btn-secondary drill-link" id="back-button">{{ t.backButton }}</a>
+    <a href="{{ home_href }}" class="btn btn-secondary drill-link" id="home-button">{{ t.homeButton }}</a>
+</div>
