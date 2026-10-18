@@ -1,78 +1,38 @@
-        $(document).ready(function() {
-            // 其余原始代码保持不变
-            let currentLocation = ['经纬度查询'];
+$(function () {
+    // 服务端已渲染好当前层级内容（含真实 <a href> 链接），这里只做「渐进增强」：
+    // 1) 点击下钻/返回/首页链接时走 AJAX 局部刷新 + pushState，避免整页刷新，体验更顺滑；
+    // 2) 没有 JS 或被搜索引擎抓取时，真实链接也能正常跳转并被收录。
 
-            function updateLocation() {
-                $('.location').text('当前位置：查询工具 > ' + currentLocation.join(' > '));
-            }
-
-            $('.province-link').click(function(){
-                var province = $(this).data('province');
-                currentLocation[1] = province; // 更新城市位置
-                $('#cities-list').empty();
-                $('#areas-list').empty();
-                $('#coordinates-list').empty();
-                updateLocation(); // 更新位置显示
-
-                $.get('/location', {province: province}, function(data){
-                    data.forEach(function(city){
-                        $('#cities-list').append('<a href="#" class="link-button city-link" data-province="' + province + '" data-city="' + city + '">' + city + '</a>');
-                    });
-                    document.getElementById("provinces").style.display = "none";
-                    document.getElementById("cities").style.display = "block";
-                });
-            });
-
-            $(document).on('click', '.city-link', function(){
-                var province = $(this).data('province');
-                var city = $(this).data('city');
-                currentLocation[2] = city; // 更新省市位置
-                $('#areas-list').empty();
-                $('#coordinates-list').empty();
-                updateLocation(); // 更新位置显示
-
-                $.get('/location', {province: province, city: city}, function(data){
-                    data.forEach(function(area){
-                        $('#areas-list').append('<a href="#" class="link-button area-link" data-province="' + province + '" data-city="' + city + '" data-area="' + area + '">' + area + '</a>');
-                    });
-                    document.getElementById("cities").style.display = "none";
-                    document.getElementById("areas").style.display = "block";
-                });
-            });
-
-            $(document).on('click', '.area-link', function(){
-                var province = $(this).data('province');
-                var city = $(this).data('city');
-                var area = $(this).data('area');
-                currentLocation[3] = area; // 更新区域位置
-                $('#coordinates-list').empty();
-                $('#sun-times-row td').empty(); // 清空之前的日出日落时间
-                updateLocation(); // 更新位置显示
-
-                $.get('/location', {province: province, city: city, area: area}, function(data){
-                    data.forEach(function(coordinate){
-                        $('#coordinates-list').append('<div class="coordinate-item">' + coordinate.area + ': ' + coordinate.lat + ', ' + coordinate.lng + '</div>');
-                        $('#sun-list').append('<div class="sun-info"><a href="/sun?latitude=' + coordinate.lat + '&longitude=' + coordinate.lng + '&date=today&timezone=asia/shanghai">查看' + coordinate.area + '日出、日落时间</a></div>');
-                        $('#isnight-list').append('<div class="isnight-info"><a href="/isnight?latitude=' + coordinate.lat + '&longitude=' + coordinate.lng + '&date=today&timezone=asia/shanghai">查看' + coordinate.area + '现在是否夜晚</a></div>');
-
-                        // 请求日出日落时间
-                        $.get('/sun', {
-                            latitude: coordinate.lat,
-                            longitude: coordinate.lng,
-                            date: 'today',
-                            timezone: 'asia/shanghai'
-                        }, function(sunData) {
-                            // 填充表格
-                            $('#sun-times-row td:nth-child(1)').text(sunData.日期);
-                            $('#sun-times-row td:nth-child(2)').text(sunData.天亮);
-                            $('#sun-times-row td:nth-child(3)').text(sunData.日出);
-                            $('#sun-times-row td:nth-child(4)').text(sunData.正午);
-                            $('#sun-times-row td:nth-child(5)').text(sunData.日落);
-                            $('#sun-times-row td:nth-child(6)').text(sunData.天黑);
-                        });
-                    });
-                    document.getElementById("areas").style.display = "none";
-                    document.getElementById("coordinates").style.display = "block";
-                });
-            });
+    // 统一用 AJAX 拉取目标页的主体内容（?partial=1 仅返回 #main 内的 HTML）
+    function fetchMain(url) {
+        var sep = url.indexOf('?') > -1 ? '&' : '?';
+        $.get(url + sep + 'partial=1', function (html) {
+            $('#main').html(html);
+            window.history.pushState({ url: url }, '', url);
+            window.scrollTo(0, 0);
         });
+    }
+
+    // 拦截所有站内导航链接（下钻、面包屑、返回、首页）
+    $(document).on('click', 'a.drill-link', function (e) {
+        e.preventDefault();
+        fetchMain(this.href);
+    });
+
+    // 浏览器前进/后退：重新拉取对应层级的主体内容
+    window.addEventListener('popstate', function () {
+        var url = window.location.pathname + window.location.search;
+        var sep = url.indexOf('?') > -1 ? '&' : '?';
+        $.get(url + sep + 'partial=1', function (html) {
+            $('#main').html(html);
+        });
+    });
+
+    // 切换语言：保留当前省/市/区县/乡镇路径，只替换 lang 参数（整页刷新以重新服务端渲染）
+    $('#language-select').on('change', function () {
+        var params = new URLSearchParams(window.location.search);
+        params.set('lang', this.value);
+        params.delete('partial');
+        window.location.search = params.toString();
+    });
+});
