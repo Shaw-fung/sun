@@ -43,7 +43,7 @@
 {% elif level == 'coordinates' %}
     <h2>{{ t.coordinatesHeader }}</h2>
     {% if lat is not none %}
-        <div class="coordinate-item">{{ town }}：{{ lat }}, {{ lng }}</div>
+        <div class="coordinate-item">{{ town_disp }}：{{ lat }}, {{ lng }}</div>
 
         <h2>{{ t.sunHeader }}</h2>
         <div class="sunset-times">
@@ -81,6 +81,44 @@
             <span class="muted">（isNight: {{ isnight }}）</span>
         </div>
         <p class="muted">接口调用（供程序判断当前是否夜晚）：<a rel="nofollow" href="/isnight?latitude={{ lat }}&longitude={{ lng }}&date=today&timezone=asia/shanghai">/isnight?latitude={{ lat }}&amp;longitude={{ lng }}&amp;timezone=asia/shanghai</a></p>
+
+        <h2>{{ t.weatherHeader }}</h2>
+        <div id="weather" class="weather-box">
+            {% if weather %}
+                {% if weather.current %}
+                    <div class="weather-now">{{ weather.current.emoji }} <strong>{% if weather.current.temp is not none %}{{ weather.current.temp | round }}°{% endif %}</strong> {{ weather.current.text }}</div>
+                {% endif %}
+                {% if weather.hours %}
+                    <h3 class="weather-sub">{{ t.weatherHourly }}</h3>
+                    <div class="hourly flex-wrap">
+                        {% for h in weather.hours %}
+                            <div class="hour-card">
+                                <div class="h-time">{{ h.time }}</div>
+                                <div class="h-emoji">{{ h.emoji }}</div>
+                                <div class="h-temp">{% if h.temp is not none %}{{ h.temp | round }}°{% endif %}</div>
+                                <div class="h-sub">{{ h.text }}</div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                {% if weather.days and weather.days | length > 1 %}
+                    <h3 class="weather-sub">{{ t.weatherFuture }}</h3>
+                    <div class="daily flex-wrap">
+                        {% for day in weather.days[1:] %}
+                            <div class="day-card">
+                                <div class="d-date">{{ day.date }}</div>
+                                <div class="d-emoji">{{ day.emoji }}</div>
+                                <div class="d-text">{{ day.text }}</div>
+                                <div class="d-temp">{% if day.tmin is not none %}{{ day.tmin | round }}°{% endif %} ~ {% if day.tmax is not none %}{{ day.tmax | round }}°{% endif %}</div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                {% if weather.stale %}<p class="muted">{{ t.weatherStale }}</p>{% endif %}
+            {% else %}
+                <p class="muted">{{ t.weatherError }}</p>
+            {% endif %}
+        </div>
     {% else %}
         <div class="coordinate-item muted">未找到“{{ town }}”对应的经纬度数据，请返回上一级重新选择。</div>
     {% endif %}

@@ -11,6 +11,11 @@
     <meta name="theme-color" content="#007bff">
     <link rel="canonical" href="{{ page_url }}">
 
+    <!-- 多语言备用链接：告诉搜索引擎同一地点的各语言版本（hreflang） -->
+    {% for code, url in hreflangs %}
+    <link rel="alternate" hreflang="{{ code }}" href="{{ url }}">
+    {% endfor %}
+
     <!-- Open Graph / 微信、QQ、Facebook 等分享卡片 -->
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="{{ t.ogSiteName }}">
@@ -36,6 +41,16 @@
       "name": "{{ t.ogSiteName }}",
       "url": "{{ page_url }}",
       "description": "{{ t.metaDescription }}"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": {{ page_title|tojson }},
+      "description": {{ page_description|tojson }},
+      "inLanguage": "{{ language }}",
+      "url": "{{ page_url }}"
     }
     </script>
 
@@ -152,6 +167,54 @@
             color: #bbb;
             margin: 0 4px;
         }
+        /* 天气预报 */
+        .weather-box {
+            margin-top: 10px;
+        }
+        .weather-now {
+            background-color: #e7f1ff;
+            padding: 12px 15px;
+            border-radius: 8px;
+            font-size: 18px;
+            color: #004085;
+            margin-bottom: 10px;
+        }
+        .weather-sub {
+            font-size: 16px;
+            color: #495057;
+            margin: 16px 0 8px;
+            border-left: 4px solid #007bff;
+            padding-left: 8px;
+        }
+        .flex-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .hour-card, .day-card {
+            background-color: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 8px 10px;
+            text-align: center;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+        }
+        .hour-card {
+            width: 66px;
+            flex: 0 0 auto;
+        }
+        .h-time { font-size: 12px; color: #6c757d; }
+        .h-emoji { font-size: 22px; line-height: 1.4; }
+        .h-temp { font-weight: bold; color: #343a40; }
+        .h-sub { font-size: 11px; color: #868e96; }
+        .day-card {
+            width: 110px;
+            flex: 0 0 auto;
+        }
+        .d-date { font-size: 12px; color: #6c757d; }
+        .d-emoji { font-size: 26px; line-height: 1.4; }
+        .d-text { font-size: 12px; color: #495057; }
+        .d-temp { font-weight: bold; color: #007bff; font-size: 13px; }
     </style>
 </head>
 <body>
