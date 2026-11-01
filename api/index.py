@@ -5,9 +5,18 @@ import astral
 import astral.sun
 import json
 import os
+import sys
 import time
 import urllib.request
 from urllib.parse import urlencode
+
+# 兼容两种运行场景：
+#  - 本地调试：python index.py（cwd=api/），本目录即在 sys.path 中；
+#  - Vercel：以包形式 import api.index，此时 sys.path 仅有 /var/task 而无 /var/task/api，
+#    同目录的 geo_i18n 模块会找不到（ModuleNotFoundError）。
+# 因此显式把本文件所在目录加入 sys.path，确保两侧都能 import。
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
 from geo_i18n import display_name, title_name, romanize
 
 app = Flask(__name__)
